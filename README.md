@@ -53,3 +53,8 @@ def get_user_location():
     user = get_authenticated_user()
     return locationService.get(user)
 ```
+
+# Install dependencies
+`pip install -e .`
+`pip install -e .[dev]`
+`pytest`
