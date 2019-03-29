@@ -9,7 +9,7 @@ with open("README.md", "r") as fh:
 if __name__ == "__main__":
     setup(
         name="flask-rebar-auth0",
-        version="0.1.2",
+        version="0.1.3",
         author="Emile Fugulin",
         author_email="emilefugulin@hotmail.com",
         description="Flask-Rebar-Auth0 is a simple Flask-Rebar authenticator Auth0",
@@ -17,7 +17,7 @@ if __name__ == "__main__":
         long_description_content_type='text/markdown',
         keywords=["flask", "flask-rebar", "auth0"],
         license="MIT",
-        py_modules=["flask_rebar_auth0"],
+        packages=["flask_rebar_auth0"],
         include_package_data=True,
         install_requires=[
             "flask-rebar>=1.0.0,<2",
