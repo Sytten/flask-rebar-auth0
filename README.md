@@ -56,5 +56,7 @@ def get_user_location():
 
 # Install dev dependencies
 `pip install -e .`
+
 `pip install -e .[dev]`
+
 `pytest`
