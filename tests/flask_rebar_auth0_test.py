@@ -14,7 +14,11 @@ from flask_rebar import errors
 from werkzeug.http import dump_cookie
 from jose import jwt
 
-from flask_rebar_auth0 import Auth0Authenticator, get_access_token_claims, get_authenticated_user
+from flask_rebar_auth0 import (
+    Auth0Authenticator,
+    get_access_token_claims,
+    get_authenticated_user,
+)
 
 
 @pytest.fixture
@@ -67,59 +71,113 @@ def mock_valid_time(mocker: MockFixture):
 
 
 # Scopes tests
-def test_all_scopes_present(mocker: MockFixture, flask_app: Flask, authenticator: Auth0Authenticator, access_token: str):
+def test_all_scopes_present(
+    mocker: MockFixture,
+    flask_app: Flask,
+    authenticator: Auth0Authenticator,
+    access_token: str,
+):
     mock_valid_time(mocker)
-    with flask_app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
+    with flask_app.test_request_context(
+        headers={"Authorization": f"Bearer {access_token}"}
+    ):
         authenticator.with_scopes(["read:location"]).authenticate()
 
 
-def test_missing_scopes(mocker: MockFixture, flask_app: Flask, authenticator: Auth0Authenticator, access_token: str):
+def test_missing_scopes(
+    mocker: MockFixture,
+    flask_app: Flask,
+    authenticator: Auth0Authenticator,
+    access_token: str,
+):
     mock_valid_time(mocker)
-    with flask_app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
+    with flask_app.test_request_context(
+        headers={"Authorization": f"Bearer {access_token}"}
+    ):
         with pytest.raises(errors.Forbidden):
-            authenticator.with_scopes(["read:location", "write:location"]).authenticate()
+            authenticator.with_scopes(
+                ["read:location", "write:location"]
+            ).authenticate()
 
 
-def test_no_scopes(mocker: MockFixture, flask_app: Flask, authenticator: Auth0Authenticator, access_token: str):
+def test_no_scopes(
+    mocker: MockFixture,
+    flask_app: Flask,
+    authenticator: Auth0Authenticator,
+    access_token: str,
+):
     mock_valid_time(mocker)
-    with flask_app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
+    with flask_app.test_request_context(
+        headers={"Authorization": f"Bearer {access_token}"}
+    ):
         authenticator.with_scopes([]).authenticate()
 
 
 # Authenticate tests
-def test_authenticate_ok(mocker: MockFixture, flask_app: Flask, authenticator: Auth0Authenticator, access_token: str):
+def test_authenticate_ok(
+    mocker: MockFixture,
+    flask_app: Flask,
+    authenticator: Auth0Authenticator,
+    access_token: str,
+):
     mock_valid_time(mocker)
-    with flask_app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
+    with flask_app.test_request_context(
+        headers={"Authorization": f"Bearer {access_token}"}
+    ):
         authenticator.authenticate()
         assert get_access_token_claims() != {}
 
 
-def test_authenticate_failure(mocker: MockFixture, flask_app: Flask, authenticator: Auth0Authenticator, access_token: str):
+def test_authenticate_failure(
+    mocker: MockFixture,
+    flask_app: Flask,
+    authenticator: Auth0Authenticator,
+    access_token: str,
+):
     mock_valid_time(mocker)
     authenticator.audience = "SomeRandomAudience"
-    with flask_app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
+    with flask_app.test_request_context(
+        headers={"Authorization": f"Bearer {access_token}"}
+    ):
         with pytest.raises(errors.Unauthorized):
             authenticator.authenticate()
 
 
-def test_create_user_ok(mocker: MockFixture, flask_app: Flask, authenticator: Auth0Authenticator, access_token: str):
+def test_create_user_ok(
+    mocker: MockFixture,
+    flask_app: Flask,
+    authenticator: Auth0Authenticator,
+    access_token: str,
+):
     @authenticator.identity_handler
     def create_user(claims: Dict[str, Any]):
         return {"User": claims["sub"]}
 
     mock_valid_time(mocker)
-    with flask_app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
+    with flask_app.test_request_context(
+        headers={"Authorization": f"Bearer {access_token}"}
+    ):
         authenticator.authenticate()
-        assert get_authenticated_user()["User"] == "Tlapef2d0GHcq32k2W0PycmFL4wIxuGM@clients"
+        assert (
+            get_authenticated_user()["User"]
+            == "Tlapef2d0GHcq32k2W0PycmFL4wIxuGM@clients"
+        )
 
 
-def test_create_user_failure(mocker: MockFixture, flask_app: Flask, authenticator: Auth0Authenticator, access_token: str):
+def test_create_user_failure(
+    mocker: MockFixture,
+    flask_app: Flask,
+    authenticator: Auth0Authenticator,
+    access_token: str,
+):
     @authenticator.identity_handler
     def create_user(claims: Dict[str, Any]):
         raise Exception
 
     mock_valid_time(mocker)
-    with flask_app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
+    with flask_app.test_request_context(
+        headers={"Authorization": f"Bearer {access_token}"}
+    ):
         with pytest.raises(errors.Unauthorized):
             authenticator.authenticate()
 
@@ -192,7 +250,10 @@ def test_refresh_keys_ok(authenticator: Auth0Authenticator):
 
 
 def test_refresh_keys_failure(requests_mock: Mocker, flask_app: Flask):
-    requests_mock.get("https://perdu.auth0.com/.well-known/jwks.json", exc=requests.exceptions.ConnectTimeout)
+    requests_mock.get(
+        "https://perdu.auth0.com/.well-known/jwks.json",
+        exc=requests.exceptions.ConnectTimeout,
+    )
     authenticator = Auth0Authenticator(flask_app)
     assert authenticator.keys == {}
 
@@ -222,7 +283,9 @@ def test_cookie_extract(
 def test_header_extract(
     flask_app: Flask, authenticator: Auth0Authenticator, access_token: str
 ):
-    with flask_app.test_request_context(headers={"Authorization": f"Bearer {access_token}"}):
+    with flask_app.test_request_context(
+        headers={"Authorization": f"Bearer {access_token}"}
+    ):
         token = authenticator._get_token()
         assert token == access_token
 
