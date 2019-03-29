@@ -9,11 +9,12 @@ with open("README.md", "r") as fh:
 if __name__ == "__main__":
     setup(
         name="flask-rebar-auth0",
-        version="0.1.0",
+        version="0.1.1",
         author="Emile Fugulin",
         author_email="emilefugulin@hotmail.com",
         description="Flask-Rebar-Auth0 is a simple Flask-Rebar authenticator Auth0",
         long_description=long_description,
+        long_description_content_type='text/markdown',
         keywords=["flask", "flask-rebar", "auth0"],
         license="MIT",
         py_modules=["flask_rebar_auth0"],
@@ -26,12 +27,12 @@ if __name__ == "__main__":
             "cryptography>=2.6.1,<3",
         ],
         extras_require={
-            "dev": ["pytest", "pytest-cov", "pytest-mock", "requests-mock"]
+            "dev": ["pytest", "pytest-cov", "pytest-mock", "requests-mock", "black"]
         },
         url="https://github.com/Sytten/flask-rebar-auth0",
         classifiers=[
             "Environment :: Web Environment",
-            "Framework :: Flask-Rebar",
+            "Framework :: Flask",
             "Intended Audience :: Developers",
             "License :: OSI Approved :: MIT License",
             "Operating System :: OS Independent",
