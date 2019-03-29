@@ -24,19 +24,19 @@ def get_access_token_claims() -> Dict[str, Any]:
 
 class Auth0AuthenticatorRBAC(Authenticator):
     def __init__(
-        self, authenticator: "Auth0Authenticator", permissions: List[str] = []
+        self, authenticator: "Auth0Authenticator", scopes: List[str] = []
     ) -> None:
         self.authenticator = authenticator
-        self.permissions = set(permissions)
+        self.scopes = set(scopes)
 
     def authenticate(self):
         self.authenticator.authenticate()
 
         claims = get_access_token_claims()
-        permissions = claims.get("permissions", [])  # RBAC
-        permissions.extend(claims.get("scopes", []))  # Otherwise
+        scopes = claims.get("permissions", [])  # RBAC
+        scopes.extend(claims.get("scope", "").split())  # Otherwise
 
-        if not self.permissions.issubset(set(permissions)):
+        if not self.scopes.issubset(set(scopes)):
             raise errors.Forbidden("Missing the right permissions")
 
 
@@ -106,9 +106,9 @@ class Auth0Authenticator(Authenticator):
         self.identity_callback = callback
         return callback
 
-    def with_permissions(self, permissions: List[str]) -> Authenticator:
-        """Wraps the authenticator with the needed permissions to access the ressource."""
-        return Auth0AuthenticatorRBAC(self, permissions)
+    def with_scopes(self, scopes: List[str]) -> Authenticator:
+        """Wraps the authenticator with the needed scopes to access the ressource."""
+        return Auth0AuthenticatorRBAC(self, scopes)
 
     def _get_payload(self, token, key) -> Dict[str, Any]:
         try:
