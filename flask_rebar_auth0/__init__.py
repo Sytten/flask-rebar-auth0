@@ -45,12 +45,12 @@ class Auth0Authenticator(Authenticator):
     AUTH0_KEYS_URL = "https://{}/.well-known/jwks.json"
 
     def __init__(self, app: Flask = None) -> None:
+        self.identity_callback = None
+
         if app is not None:
             self.init_app(app)
 
     def init_app(self, app: Flask):
-        self.identity_callback = None
-
         # Set general Auth0 params
         endpoint = self._get_config(app, "AUTH0_ENDPOINT")
         self.auth0_url = self.AUTH0_KEYS_URL.format(endpoint)

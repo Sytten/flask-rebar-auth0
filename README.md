@@ -23,7 +23,7 @@ app.config.from_mapping({
 authenticator = Auth0Authenticator(app)
 
 @authenticator.identity_handler
-def lookup_cognito_user(claims: Dict[str, Any]) -> Any:
+def create_user(claims: Dict[str, Any]) -> Any:
     """Built a user object from the claims"""
     return { "id": claims["sub"] }
 ```
