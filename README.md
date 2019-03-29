@@ -54,7 +54,7 @@ def get_user_location():
     return locationService.get(user)
 ```
 
-# Install dependencies
+# Install dev dependencies
 `pip install -e .`
 `pip install -e .[dev]`
 `pytest`
