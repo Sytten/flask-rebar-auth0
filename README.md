@@ -53,3 +53,13 @@ def get_user_location():
     user = get_authenticated_user()
     return locationService.get(user)
 ```
+
+## Swagger
+If you wish to use swagger, you will need to register the custom authenticators.
+This is needed by `rebar` to be able to convert them to the right swagger [security definition](https://swagger.io/docs/specification/2-0/authentication/).
+If you use the `Cookie` authentication, please note that swagger 2.0 does support this method of authentication. It will be registered as a `Cookie` header.
+```python
+from flask_rebar_auth0 import register_authenticators
+
+register_authenticators(registry)
+```
