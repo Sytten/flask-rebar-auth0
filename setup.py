@@ -14,7 +14,7 @@ if __name__ == "__main__":
         author_email="emilefugulin@hotmail.com",
         description="Flask-Rebar-Auth0 is a simple Flask-Rebar authenticator Auth0",
         long_description=long_description,
-        long_description_content_type='text/markdown',
+        long_description_content_type="text/markdown",
         keywords=["flask", "flask-rebar", "auth0"],
         license="MIT",
         packages=["flask_rebar_auth0"],
