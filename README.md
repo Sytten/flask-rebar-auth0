@@ -1,4 +1,7 @@
 # Flask-Rebar-Auth0
+[![PyPI version](https://badge.fury.io/py/flask-rebar-auth0.svg)](https://badge.fury.io/py/flask-rebar-auth0)
+[![Python versions](https://img.shields.io/pypi/pyversions/Flask-Rebar-Auth0.svg)](https://badge.fury.io/py/flask-rebar-auth0)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Sytten/flask-rebar-auth0/blob/master/LICENSE)
 
 Simple [Flask-Rebar](https://github.com/plangrid/flask-rebar) authenticator for [Auth0](https://auth0.com).
 Your access tokens need to be [JWT tokens](https://auth0.com/docs/api-auth/tutorials/verify-access-token) for this authenticator to work.
