@@ -27,7 +27,7 @@ class Auth0AuthenticatorRBAC(Authenticator):
         self.authenticator.authenticate()
 
         claims = get_access_token_claims()
-        scopes = claims.get("permissions", [])  # RBAC
+        scopes = claims.get("permissions", []).copy()  # RBAC
         scopes.extend(claims.get("scope", "").split())  # Otherwise
 
         if not self.scopes.issubset(set(scopes)):
@@ -102,6 +102,10 @@ class Auth0Authenticator(Authenticator):
 
     def with_scopes(self, scopes: List[str]) -> Authenticator:
         """Wraps the authenticator with the needed scopes to access the ressource."""
+        # Avoid frustrating the users if they provide a string
+        if isinstance(scopes, str):
+            scopes = [scopes]
+
         return Auth0AuthenticatorRBAC(self, scopes)
 
     def _get_payload(self, token, key) -> Dict[str, Any]:

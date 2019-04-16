@@ -113,6 +113,32 @@ def test_no_scopes(
         authenticator.with_scopes([]).authenticate()
 
 
+def test_string_scope(
+    mocker: MockFixture,
+    flask_app: Flask,
+    authenticator: Auth0Authenticator,
+    access_token: str,
+):
+    mock_valid_time(mocker)
+    with flask_app.test_request_context(
+        headers={"Authorization": f"Bearer {access_token}"}
+    ):
+        authenticator.with_scopes("read:location").authenticate()
+
+
+def test_claims_are_not_modified(
+    mocker: MockFixture,
+    flask_app: Flask,
+    authenticator: Auth0Authenticator,
+    access_token: str,
+):
+    mock_valid_time(mocker)
+    with flask_app.test_request_context(
+        headers={"Authorization": f"Bearer {access_token}"}
+    ):
+        authenticator.with_scopes(["read:location"]).authenticate()
+
+
 # Authenticate tests
 def test_authenticate_ok(
     mocker: MockFixture,
