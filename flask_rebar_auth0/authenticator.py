@@ -45,6 +45,9 @@ class Auth0Authenticator(Authenticator):
             self.init_app(app)
 
     def init_app(self, app: Flask):
+        # Check if testing
+        self.testing = app.config.get("AUTH0_TESTING", False)
+
         # Set general Auth0 params
         endpoint = self._get_config(app, "AUTH0_ENDPOINT")
         self.auth0_url = self.AUTH0_KEYS_URL.format(endpoint)
@@ -69,7 +72,8 @@ class Auth0Authenticator(Authenticator):
 
         # Force a keys refresh on creation to be ready to authenticate requests
         self.keys = {}
-        self._refresh_keys()
+        if not self.testing:
+            self._refresh_keys()
 
     def authenticate(self):
         try:
@@ -110,12 +114,14 @@ class Auth0Authenticator(Authenticator):
 
     def _get_payload(self, token, key) -> Dict[str, Any]:
         try:
+            options = {"verify_exp": False} if self.testing else {}
             return jwt.decode(
                 token,
                 key,
                 algorithms=self.algorithms,
                 audience=self.audience,
                 issuer=self.issuer,
+                options=options,
             )
         except jwt.ExpiredSignatureError:
             raise Exception("Token is expired")
@@ -159,9 +165,12 @@ class Auth0Authenticator(Authenticator):
             keys_response = requests.get(self.auth0_url).json()
             keys = keys_response.get("keys")
             for key in keys:
-                self.keys[key.get("kid")] = key
+                self._add_key(key)
         except Exception:
             logger.error("An error occured when refreshing the pool keys")
+
+    def _add_key(self, key: Dict[str, Any]) -> None:
+        self.keys[key.get("kid")] = key
 
     @staticmethod
     def _get_kid(token: str) -> str:

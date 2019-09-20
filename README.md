@@ -14,12 +14,14 @@ app.config.from_mapping({
     "AUTH0_ALGORITHMS": ["RS256"],            # The authorized algorithms, you should not have to change it
     "AUTH0_AUDIENCE": "https://api.perdu.com" # The API Identifier as set on Auth0
 
-    "AUTH0_HEADER_AUTHENTICATION": True       # USe the authentication by header
+    "AUTH0_HEADER_AUTHENTICATION": True       # Use the authentication by header
     "AUTH0_HEADER_NAME": "Authorization"      # (OPTIONAL) Change the header used
     "AUTH0_HEADER_PREFIX": "Bearer"           # (OPTIONAL) Change the prefix used
     # OR
     "AUTH0_COOKIE_AUTHENTICATION": True       # Use the authentication by cookie
     "AUTH0_COOKIE_NAME": "Some Cookie"        # Name of the cookie containing the access token
+    
+    "AUTH0_TESTING": False                    # (OPTIONAL) Disable expiration check of tokens during tests   
 })
 
 # Create
@@ -65,4 +67,25 @@ If you use the `Cookie` authentication, please note that swagger 2.0 does suppor
 from flask_rebar_auth0 import register_authenticators
 
 register_authenticators(registry)
+```
+
+## Testing
+During tests, we suggest setting `AUTH0_TESTING` to `True` to allow expired tokens to be used.
+The setting also disables the request to auth0 for the keys, you MUST supply them manually.
+```python
+my_key = {
+  "alg": "RS256",
+  "kty": "RSA",
+  "use": "sig",
+  "x5c": [
+    "MIIC+TCCAeGgAwIBAgIJFDs6wMv+QZ3IMA0GCSqGSIb3DQEBCwUAMBoxGDAWBgNVBAMTD3BlcmR1LmF1dGgwLmNvbTAeFw0xOTAzMjkwNDM2MDhaFw0zMjEyMDUwNDM2MDhaMBoxGDAWBgNVBAMTD3BlcmR1LmF1dGgwLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKEsfpuY/dOCI1yFnBV8MtUmq/SvzAhOW8SJvLyZpvx+zVnz9Wrk7LX/HVlxjdoQZXGtyIISuMG5rcQaA+4jZ6Bcphl4Ox9o6b0pw9aNQPS12IU2HM8b+szY+AqfZZr1xwTNaH8mOOtpfcQT4zHj+cYnrjfsN5d7o7P2dkpmk+E02tg/jq6MsoYaTL5rDL1clL1Rn0osLrpFFx6Ev8wrEUb2wCRgMeKlSALrc0YgmmSzJzeTW9dIgfoskBixk+OmtC/Oubq5R/bu6roF3VWbNlX7tQSyLNNLMZbmva1GMlvNWwgTHvg+hsYaknDN6PDfV6mWiNS1EPaX+j9GdMa59kUCAwEAAaNCMEAwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUCFdAmevfXzhKYNyOuWozLN1r5U8wDgYDVR0PAQH/BAQDAgKEMA0GCSqGSIb3DQEBCwUAA4IBAQAkIoi8ddKGcqSgesaDgmWwp4oZr4NVX/g9wq7M9aU6SS4P2gwEvVLqAzyWNMMJaA4h7g2V/gKK8+zfGODLf7rCNAyl5ABJriLQywxBj0jTzFbVDMeiZMdE+6kFnERQMc2e4UqpLcsv2Mwt9hfdXDeSwzoVwCU14Y3wXNrT6QUSk5hDEiEUdVuB+v2CB8Xgp4CokiigMCXQ9uKttVuBhv6oLjcx9rM5z6dtxSFiNuBZafcejZsGCzD9J1l2CVEN4vNSGag8Y9yxCUXZ1DXRZvdsmbialzd4PqCus26IgtuvJLdQuk7doxGCdNlTVb2Ig8BhrjGg+5oGZh7KeZX7qHOb"
+  ],
+  "n": "oSx-m5j904IjXIWcFXwy1Sar9K_MCE5bxIm8vJmm_H7NWfP1auTstf8dWXGN2hBlca3IghK4wbmtxBoD7iNnoFymGXg7H2jpvSnD1o1A9LXYhTYczxv6zNj4Cp9lmvXHBM1ofyY462l9xBPjMeP5xieuN-w3l3ujs_Z2SmaT4TTa2D-OroyyhhpMvmsMvVyUvVGfSiwuukUXHoS_zCsRRvbAJGAx4qVIAutzRiCaZLMnN5Nb10iB-iyQGLGT46a0L865urlH9u7qugXdVZs2Vfu1BLIs00sxlua9rUYyW81bCBMe-D6GxhqScM3o8N9XqZaI1LUQ9pf6P0Z0xrn2RQ",
+  "e": "AQAB",
+  "kid": "OTEyNDRCREE1OTlEOUYwNEM2QTM5RkJEODkxOEQyMDQ0NjYxRENEMw",
+  "x5t": "OTEyNDRCREE1OTlEOUYwNEM2QTM5RkJEODkxOEQyMDQ0NjYxRENEMw"
+}
+
+authenticator = Auth0Authenticator(app)
+authenticator._add_key(my_key)
 ```

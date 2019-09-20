@@ -320,3 +320,27 @@ def test_no_token(flask_app: Flask, authenticator: Auth0Authenticator):
     with flask_app.test_request_context():
         with pytest.raises(Exception, match=r"Missing token"):
             authenticator._get_token()
+
+
+# Testing
+def test_testing_wont_refresh_keys(flask_app: Flask, requests_mock: Mocker):
+    flask_app.config["AUTH0_TESTING"] = True
+    auth0_endpoint_mock = requests_mock.get(
+        "https://perdu.auth0.com/.well-known/jwks.json"
+    )
+    Auth0Authenticator(flask_app)
+
+    assert auth0_endpoint_mock.call_count == 0
+
+
+def test_testing_accepts_expired_token(
+    mocker: MockFixture,
+    authenticator: Auth0Authenticator,
+    access_token: str,
+    sign_key: str,
+):
+    authenticator.testing = True
+    datetime_mock = mocker.patch("jose.jwt.datetime")
+    datetime_mock.utcnow = Mock(return_value=datetime(2050, 1, 1))
+    payload = authenticator._get_payload(access_token, sign_key)
+    assert payload is not None
