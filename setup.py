@@ -27,7 +27,14 @@ if __name__ == "__main__":
             "cryptography>=2.6.1,<3",
         ],
         extras_require={
-            "dev": ["pytest", "pytest-cov", "pytest-mock", "requests-mock", "black"]
+            "dev": [
+                "pytest",
+                "pytest-cov",
+                "pytest-mock",
+                "requests-mock",
+                "black",
+                "codecov",
+            ]
         },
         url="https://github.com/Sytten/flask-rebar-auth0",
         classifiers=[
