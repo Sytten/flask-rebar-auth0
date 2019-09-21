@@ -1,4 +1,4 @@
-from typing import Callable, Any, List, Dict
+from typing import Callable, Any, List, Dict, Union
 import logging
 
 import requests
@@ -37,9 +37,20 @@ class Auth0AuthenticatorRBAC(Authenticator):
 class Auth0Authenticator(Authenticator):
     # URL to fetch the public keys used to verify the signature
     AUTH0_KEYS_URL = "https://{}/.well-known/jwks.json"
+    KEY_SCHEMA = {
+        "alg": str,
+        "kty": str,
+        "use": str,
+        "x5c": [str],
+        "n": str,
+        "e": str,
+        "kid": str,
+        "x5t": str,
+    }
 
     def __init__(self, app: Flask = None) -> None:
         self.identity_callback = None
+        self.keys = {}
 
         if app is not None:
             self.init_app(app)
@@ -71,7 +82,6 @@ class Auth0Authenticator(Authenticator):
             raise Exception("Must specify at least one method of authentication")
 
         # Force a keys refresh on creation to be ready to authenticate requests
-        self.keys = {}
         if not self.testing:
             self._refresh_keys()
 
@@ -104,7 +114,7 @@ class Auth0Authenticator(Authenticator):
         self.identity_callback = callback
         return callback
 
-    def with_scopes(self, scopes: List[str]) -> Authenticator:
+    def with_scopes(self, scopes: Union[str, List[str]]) -> Authenticator:
         """Wraps the authenticator with the needed scopes to access the ressource."""
         # Avoid frustrating the users if they provide a string
         if isinstance(scopes, str):
@@ -112,7 +122,13 @@ class Auth0Authenticator(Authenticator):
 
         return Auth0AuthenticatorRBAC(self, scopes)
 
-    def _get_payload(self, token, key) -> Dict[str, Any]:
+    def add_key(self, key: Dict[str, Any]) -> None:
+        """Add a key to the list keys used to validate the signature of tokens"""
+        if not self._validate_key_structure(self.KEY_SCHEMA, key):
+            raise Exception("Invalid key")
+        self._add_key(key)
+
+    def _get_payload(self, token: str, key: Dict[str, Any]) -> Dict[str, Any]:
         try:
             options = {"verify_exp": False} if self.testing else {}
             return jwt.decode(
@@ -188,3 +204,20 @@ class Auth0Authenticator(Authenticator):
         if value is None:
             raise Exception(f"{config_name} not found in app configuration")
         return value
+
+    @staticmethod
+    def _validate_key_structure(schema: Dict[str, Any], key: Dict[str, Any]) -> bool:
+        if isinstance(schema, dict) and isinstance(key, dict):
+            return all(
+                k in key
+                and Auth0Authenticator._validate_key_structure(schema[k], key[k])
+                for k in schema
+            )
+        if isinstance(schema, list) and isinstance(key, list):
+            return all(
+                Auth0Authenticator._validate_key_structure(schema[0], c) for c in key
+            )
+        elif isinstance(schema, type):
+            return isinstance(key, schema)
+        else:
+            return False

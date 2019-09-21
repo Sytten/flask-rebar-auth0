@@ -90,5 +90,5 @@ my_key = {
 }
 
 authenticator = Auth0Authenticator(app)
-authenticator._add_key(my_key)
+authenticator.add_key(my_key)
 ```

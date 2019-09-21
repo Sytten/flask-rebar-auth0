@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 import json
 from os.path import join, dirname
 from datetime import datetime
@@ -12,7 +12,6 @@ from requests_mock import Mocker
 from flask import Flask
 from flask_rebar import errors
 from werkzeug.http import dump_cookie
-from jose import jwt
 
 from flask_rebar_auth0 import (
     Auth0Authenticator,
@@ -22,7 +21,7 @@ from flask_rebar_auth0 import (
 
 
 @pytest.fixture
-def keys() -> Dict[str, str]:
+def keys() -> Dict[str, List[Dict[str, Any]]]:
     with open(join(dirname(__file__), "keys.json")) as data_file:
         return json.loads(data_file.read())
 
@@ -39,7 +38,7 @@ def access_token(tokens: Dict[str, str]) -> str:
 
 
 @pytest.fixture
-def sign_key(keys: Dict[str, str]) -> str:
+def sign_key(keys: Dict[str, List[Dict[str, Any]]]) -> Dict[str, Any]:
     return keys["keys"][0]
 
 
@@ -213,7 +212,7 @@ def test_valid_token(
     mocker: MockFixture,
     authenticator: Auth0Authenticator,
     access_token: str,
-    sign_key: str,
+    sign_key: Dict[str, Any],
 ):
     mock_valid_time(mocker)
     payload = authenticator._get_payload(access_token, sign_key)
@@ -224,7 +223,7 @@ def test_expired_token(
     mocker: MockFixture,
     authenticator: Auth0Authenticator,
     access_token: str,
-    sign_key: str,
+    sign_key: Dict[str, Any],
 ):
     datetime_mock = mocker.patch("jose.jwt.datetime")
     datetime_mock.utcnow = Mock(return_value=datetime(2050, 1, 1))
@@ -237,7 +236,7 @@ def test_invalid_signature(
     mocker: MockFixture,
     authenticator: Auth0Authenticator,
     tokens: Dict[str, str],
-    sign_key: str,
+    sign_key: Dict[str, Any],
 ):
     mock_valid_time(mocker)
     with pytest.raises(Exception, match=r"Invalid signature"):
@@ -248,7 +247,7 @@ def test_invalid_audience(
     mocker: MockFixture,
     authenticator: Auth0Authenticator,
     access_token: str,
-    sign_key: str,
+    sign_key: Dict[str, Any],
 ):
     mock_valid_time(mocker)
     authenticator.audience = "SomeRandomAudience"
@@ -260,7 +259,7 @@ def test_missing_signature(
     mocker: MockFixture,
     authenticator: Auth0Authenticator,
     tokens: Dict[str, str],
-    sign_key: str,
+    sign_key: Dict[str, Any],
 ):
     mock_valid_time(mocker)
     with pytest.raises(Exception, match=r"Invalid signature"):
@@ -337,10 +336,29 @@ def test_testing_accepts_expired_token(
     mocker: MockFixture,
     authenticator: Auth0Authenticator,
     access_token: str,
-    sign_key: str,
+    sign_key: Dict[str, Any],
 ):
     authenticator.testing = True
     datetime_mock = mocker.patch("jose.jwt.datetime")
     datetime_mock.utcnow = Mock(return_value=datetime(2050, 1, 1))
     payload = authenticator._get_payload(access_token, sign_key)
     assert payload is not None
+
+
+def test_testing_add_key(
+    flask_app: Flask, requests_mock: Mocker, sign_key: Dict[str, Any]
+):
+    flask_app.config["AUTH0_TESTING"] = True
+    auth0_endpoint_mock = requests_mock.get(
+        "https://perdu.auth0.com/.well-known/jwks.json"
+    )
+    authenticator = Auth0Authenticator(flask_app)
+    assert not authenticator.keys
+
+    authenticator.add_key(sign_key)
+    assert authenticator.keys
+
+
+def test_testing_add_invalid_key(authenticator: Auth0Authenticator,):
+    with pytest.raises(Exception, match=r"Invalid key"):
+        authenticator.add_key({"test": "bad key"})
