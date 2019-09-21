@@ -34,7 +34,13 @@ if __name__ == "__main__":
                 "requests-mock",
                 "black",
                 "codecov",
-            ]
+            ],
+            "test": [  # Needed because black is not supported in Python 3.5
+                "pytest",
+                "pytest-cov",
+                "pytest-mock",
+                "requests-mock",
+            ],
         },
         url="https://github.com/Sytten/flask-rebar-auth0",
         classifiers=[
