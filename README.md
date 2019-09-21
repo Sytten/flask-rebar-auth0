@@ -1,6 +1,9 @@
 # Flask-Rebar-Auth0
 [![PyPI version](https://badge.fury.io/py/flask-rebar-auth0.svg)](https://badge.fury.io/py/flask-rebar-auth0)
 [![Python versions](https://img.shields.io/pypi/pyversions/Flask-Rebar-Auth0.svg)](https://badge.fury.io/py/flask-rebar-auth0)
+[![Test](https://github.com/Sytten/flask-rebar-auth0/workflows/Test/badge.svg)](https://github.com/Sytten/flask-rebar-auth0)
+[![codecov](https://codecov.io/gh/Sytten/flask-rebar-auth0/branch/master/graph/badge.svg)](https://codecov.io/gh/Sytten/flask-rebar-auth0)
+[![code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Sytten/flask-rebar-auth0/blob/master/LICENSE)
 
 Simple [Flask-Rebar](https://github.com/plangrid/flask-rebar) authenticator for [Auth0](https://auth0.com).
