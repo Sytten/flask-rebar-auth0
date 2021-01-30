@@ -9,7 +9,7 @@ with open("README.md", "r") as fh:
 if __name__ == "__main__":
     setup(
         name="flask-rebar-auth0",
-        version="0.2.0",
+        version="0.2.1",
         author="Emile Fugulin",
         author_email="code@efugulin.com",
         description="Flask-Rebar-Auth0 is a simple Flask-Rebar authenticator for Auth0",
