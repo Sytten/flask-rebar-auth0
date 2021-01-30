@@ -11,7 +11,7 @@ if __name__ == "__main__":
         name="flask-rebar-auth0",
         version="0.2.0",
         author="Emile Fugulin",
-        author_email="emilefugulin@hotmail.com",
+        author_email="code@efugulin.com",
         description="Flask-Rebar-Auth0 is a simple Flask-Rebar authenticator for Auth0",
         long_description=long_description,
         long_description_content_type="text/markdown",
