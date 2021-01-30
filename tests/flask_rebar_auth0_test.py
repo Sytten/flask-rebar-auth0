@@ -359,6 +359,8 @@ def test_testing_add_key(
     assert authenticator.keys
 
 
-def test_testing_add_invalid_key(authenticator: Auth0Authenticator,):
+def test_testing_add_invalid_key(
+    authenticator: Auth0Authenticator,
+):
     with pytest.raises(Exception, match=r"Invalid key"):
         authenticator.add_key({"test": "bad key"})

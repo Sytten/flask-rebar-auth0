@@ -108,7 +108,7 @@ class Auth0Authenticator(Authenticator):
         self, callback: Callable[[Dict[str, Any]], Any]
     ) -> Callable[[Dict[str, Any]], Any]:
         """Register a callback to create the user object during authentication.
-        
+
         The callback will receive the verified claims and should return an object.
         """
         self.identity_callback = callback
