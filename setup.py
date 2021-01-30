@@ -24,7 +24,7 @@ if __name__ == "__main__":
             "Flask>=0.10,<2",
             "requests>=2.20.0,<3",
             "python-jose>=3.0.1,<4",
-            "cryptography>=2.6.1,<3",
+            "cryptography>=3.2,<4",
         ],
         extras_require={
             "dev": [
@@ -47,6 +47,8 @@ if __name__ == "__main__":
             "Programming Language :: Python :: 3",
             "Programming Language :: Python :: 3.6",
             "Programming Language :: Python :: 3.7",
+            "Programming Language :: Python :: 3.8",
+            "Programming Language :: Python :: 3.9",
             "Topic :: Software Development :: Libraries",
             "Topic :: Utilities",
         ],
