@@ -20,8 +20,8 @@ if __name__ == "__main__":
         packages=["flask_rebar_auth0"],
         include_package_data=True,
         install_requires=[
-            "flask-rebar>=1.0.0,<2",
-            "Flask>=0.10,<2",
+            "flask-rebar>=1.0.0,<3",
+            "Flask>=0.10,<3",
             "requests>=2.20.0,<3",
             "python-jose>=3.0.1,<4",
             "cryptography>=3.2,<4",
