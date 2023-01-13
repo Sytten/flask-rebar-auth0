@@ -24,7 +24,7 @@ if __name__ == "__main__":
             "Flask>=0.10,<3",
             "requests>=2.20.0,<3",
             "python-jose>=3.0.1,<4",
-            "cryptography>=3.2,<4",
+            "cryptography",
         ],
         extras_require={
             "dev": [
